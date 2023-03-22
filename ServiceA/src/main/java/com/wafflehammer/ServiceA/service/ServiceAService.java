@@ -1,6 +1,7 @@
 package com.wafflehammer.ServiceA.service;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class ServiceAService {
     private RestTemplate restTemplate;
 
     @CircuitBreaker(name=SERVICE_A, fallbackMethod = "serviceAFallback")
+    @Retry(name=SERVICE_A)
     public void callServiceB(int numRequests, double failurePercentage) {
         double failureIndicator = Math.ceil(100 / failurePercentage);
         String url = BASE_URL + "b/service-errors";

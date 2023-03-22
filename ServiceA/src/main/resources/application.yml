@@ -28,3 +28,11 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
         slidingWindowSize: 10
         slidingWindowType: COUNT_BASED
+    circuit-breaker-aspect-order: 1 #sets the priority of this aspect relative to retries
+  retry:
+    instances:
+      serviceA:
+        registerHealthIndicator: true
+        maxRetryAttempts: 3
+        waitDuration: 1s
+    retry-aspect-order: 2 #causes retries to happen before circuit breaker
