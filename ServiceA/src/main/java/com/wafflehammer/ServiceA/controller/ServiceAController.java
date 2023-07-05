@@ -2,6 +2,7 @@ package com.wafflehammer.ServiceA.controller;
 
 import com.wafflehammer.ServiceA.service.ServiceAService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ServiceAController {
     private ServiceAService serviceAService;
 
     @GetMapping
-    @CircuitBreaker(name=SERVICE_A, fallbackMethod = "serviceAFallback")
+    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
     public String serviceA() {
         String url = BASE_URL + "b";
         return restTemplate.getForObject(url, String.class);
@@ -40,9 +41,18 @@ public class ServiceAController {
         return "service errors completed";
     }
 
+    @GetMapping("/random-errors")
+    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
+    @Retry(name = SERVICE_A)
+    public String randomErrors() {
+        String result = serviceAService.callRandomServiceB();
+        return result;
+    }
 
 
     public String serviceAFallback(Exception e) {
+        //this could save off to the async call log pattern
+        log.info("Service A fallback");
         return "this is a fallback method for service A failing to reach service B";
     }
 }

@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ServiceAService {
@@ -16,18 +15,25 @@ public class ServiceAService {
     private static final String SERVICE_A = "serviceA";
 
     @Autowired
-    private RestTemplate restTemplate;
+    private ServiceBRestTemplate restTemplate;
 
-    @CircuitBreaker(name=SERVICE_A, fallbackMethod = "serviceAFallback")
-    @Retry(name=SERVICE_A)
+    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
+    @Retry(name = SERVICE_A)
     public void callServiceB(int numRequests, double failurePercentage) {
         double failureIndicator = Math.ceil(100 / failurePercentage);
         String url = BASE_URL + "b/service-errors";
         String response = "weird";
-        for(int counter = 1; counter <= numRequests; counter++) {
+        for (int counter = 1; counter <= numRequests; counter++) {
             boolean shouldFail = counter % failureIndicator == 0;
             response = restTemplate.getForObject(url + "?throwError=" + shouldFail, String.class);
             log.info("response: " + response);
         }
+    }
+
+    public String callRandomServiceB() {
+        String url = BASE_URL + "b/random-errors";
+        String response = restTemplate.fetchAll(url);
+        log.info("response: " + response);
+        return response;
     }
 }
