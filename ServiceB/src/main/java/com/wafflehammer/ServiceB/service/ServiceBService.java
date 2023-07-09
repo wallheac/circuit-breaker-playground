@@ -10,20 +10,21 @@ import org.springframework.stereotype.Service;
 public class ServiceBService {
     final static Logger log = LogManager.getLogger(ServiceBService.class);
 
-    public ResponseEntity<String> createResponse() {
+    public ResponseEntity<String> createResponse(String test) {
         double random = Math.random() * 100;
-        if (random < 11) {
-            log.info("throwing 500");
+        if (random < 25) {
+            log.info("throwing 500 for test {}", test);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else if (random > 10 && random < 21) {
-            log.info("throwing 429");
+        }
+        else if (random > 24 && random < 50) {
+            log.info("throwing 429 for test {}", test);
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
-        } else if (random > 20 && random < 31) {
-            log.info("throwing 400");
+        } else if (random > 49 && random < 75) {
+            log.info("throwing 400 for test {}", test);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            log.info("Success from ServiceB!");
-            return new ResponseEntity<>("Success from ServiceB!", HttpStatus.OK);
+            log.info("Success from ServiceB! for test {}", test);
+            return new ResponseEntity<>("Success from ServiceB!for test " + test, HttpStatus.OK);
         }
     }
 }

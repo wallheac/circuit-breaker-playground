@@ -26,23 +26,9 @@ public class ServiceBController {
         return "Service B is called from Service A";
     }
 
-    @GetMapping("/service-errors")
-    public String serviceErrors(
-            @RequestParam boolean throwError
-    ) {
-        if (throwError) {
-            log.info("throwing 500");
-            throw new HttpServerErrorException(HttpStatusCode.valueOf(500));
-        } else {
-            log.info("intermittent 500 err endpoint success.");
-            return "intermittent 500 err endpoint success";
-        }
-    }
-
     @GetMapping("/random-errors")
-    public ResponseEntity<String> randomErrors() {
-        log.info("service B random-errors invoked");
-        ResponseEntity<String> response = bService.createResponse();
+    public ResponseEntity<String> randomErrors(@RequestParam String test) {
+        ResponseEntity<String> response = bService.createResponse(test);
         return response;
     }
 }
