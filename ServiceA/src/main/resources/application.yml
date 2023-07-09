@@ -9,7 +9,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health, metrics
   endpoint:
     health:
       show-details: always
@@ -24,7 +24,7 @@ resilience4j:
         failureRateThreshold: 50
         minimumNumberOfCalls: 5
         automaticTransitionFromOpenToHalfOpenEnabled: true
-        waitDurationInOpenState: 5s
+        waitDurationInOpenState: 1s
         permittedNumberOfCallsInHalfOpenState: 3
         slidingWindowSize: 10
         slidingWindowType: COUNT_BASED
@@ -35,4 +35,6 @@ resilience4j:
         registerHealthIndicator: true
         maxRetryAttempts: 3
         waitDuration: 1s
+        #specifies exceptions that should not be retried
+        ignoreExceptions: org.springframework.web.client.HttpClientErrorException.BadRequest
     retry-aspect-order: 2 #causes retries to happen before circuit breaker
