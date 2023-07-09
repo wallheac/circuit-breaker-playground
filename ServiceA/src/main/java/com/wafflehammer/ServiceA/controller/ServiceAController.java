@@ -1,6 +1,7 @@
 package com.wafflehammer.ServiceA.controller;
 
 import com.wafflehammer.ServiceA.service.ServiceAService;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.apache.logging.log4j.LogManager;
@@ -25,21 +26,6 @@ public class ServiceAController {
     private RestTemplate restTemplate;
     @Autowired
     private ServiceAService serviceAService;
-
-    @GetMapping
-    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
-    public String serviceA() {
-        String url = BASE_URL + "b";
-        return restTemplate.getForObject(url, String.class);
-    }
-
-    @GetMapping("/service-errors")
-    public String serviceErrors(
-            @RequestParam int numRequests,
-            @RequestParam double failurePercentage) {
-        serviceAService.callServiceB(numRequests, failurePercentage);
-        return "service errors completed";
-    }
 
     @GetMapping("/random-errors")
     @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
