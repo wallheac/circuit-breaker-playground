@@ -30,15 +30,22 @@ public class ServiceAController {
     @GetMapping("/random-errors")
     @CircuitBreaker(name = SERVICE_A, fallbackMethod = "serviceAFallback")
     @Retry(name = SERVICE_A)
-    public String randomErrors() {
-        String result = serviceAService.callRandomServiceB();
+    public String randomErrors(@RequestParam String test) {
+        String result = serviceAService.callRandomServiceB(test);
         return result;
     }
 
 
-    public String serviceAFallback(Exception e) {
+    public String serviceAFallback(String test, Exception e) {
         //this could save off to the async call log pattern
-        log.info("Service A fallback");
+        log.info("Service A fallback. Cause: {}. Has param test set to: {}" , e, test);
+
         return "this is a fallback method for service A failing to reach service B";
+    }
+
+    public String serviceAFallback(String test, CallNotPermittedException e) {
+        log.info("CIRCUIT BREAKER Service A fallback. Cause: {}. Has param test set to: {}", e.getCause(), test);
+
+        return "this is a CIRCUIT BREAKER fallback method for service A failing to reach service B";
     }
 }
